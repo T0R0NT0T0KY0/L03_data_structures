@@ -14,7 +14,7 @@ namespace itis {
 struct ArrayList {
  public:
   // default constructor
-  ArrayList() : capacity_{kInitCapacity}, data_{new char[kInitCapacity]} {}
+  ArrayList() : capacity_{kInitCapacity}, data_{new char[kInitCapacity]{}} {}
 
   /**
    * Создание массива переменной длины.
@@ -22,11 +22,15 @@ struct ArrayList {
    * @param capacity - начальная емкость массива.
    */
   explicit ArrayList(int capacity) {
-    // To Do ...
+    capacity_ = capacity;
+    data_ = new char[capacity]{};
   }
 
   ~ArrayList() {
-    // To Do ...
+      delete[] data_;
+      data_ = nullptr;
+      capacity_ = 0;
+      size_ = 0;
   }
 
   /**
@@ -37,7 +41,11 @@ struct ArrayList {
    * @param element - значение элемента
    */
   void PushBack(char element) {
-    // To Do ...
+      if (size_== capacity_){
+          resize(capacity_ + kCapacityIncreaseCoefficient);
+      }
+      data_[size_]=element;
+      size_++;
   }
 
   /**
@@ -54,7 +62,16 @@ struct ArrayList {
    */
   void Insert(int index, char element) {
     check_out_of_range(index);
-    // To Do ...
+      if (index>=capacity_){
+          resize(index+10);
+      }
+
+      for (int i = index; i < size_-1; ++i) {
+          data_[i+1] = data_[i];
+      }
+
+      data_[index] = element;
+      size_++;
   }
 
   /**
@@ -70,8 +87,12 @@ struct ArrayList {
    */
   char Remove(int index) {
     check_out_of_range(index);
-    // To Do ...
-    return {};
+    char temp = data_[index];
+      for (int i = index; i < size_-1; ++i) {
+          data_[i] = data_[i+1];
+      }
+      size_--;
+      return temp;
   }
 
   /**
@@ -81,7 +102,7 @@ struct ArrayList {
    * Емкость (capacity) массива остается прежним.
    */
   void Clear() {
-    // To Do ...
+    delete[] data_;
   }
 
   /**
@@ -96,8 +117,7 @@ struct ArrayList {
   char Get(int index) const {
     check_out_of_range(index);
 
-    // To Do ...
-    return {};
+    return data_[index];
   }
 
   /**
@@ -108,8 +128,12 @@ struct ArrayList {
    * @return индекс элемента или -1 при остутствии элемента в массиве
    */
   int IndexOf(char element) const {
-    // To Do ...
-    return {};
+      for (int i = 0; i < size_; ++i) {
+          if (element==data_[i]){
+              return i;
+          }
+      }
+    return -1;
   }
 
   /**
@@ -120,8 +144,12 @@ struct ArrayList {
    * @return при наличии элемента - true, иначе - false
    */
   bool Contains(char element) const {
-    // To Do ...
-    return {};
+      for (int i = 0; i < size_; ++i) {
+          if (element==data_[i]){
+              return 1;
+          }
+      }
+    return 0;
   }
 
   /**
@@ -131,8 +159,7 @@ struct ArrayList {
    * @return при наличии хотя бы одного элемента - true, иначе - false
    */
   bool IsEmpty() const {
-    // To Do ...
-    return {};
+    return size_>=1;
   }
 
   int GetSize() const {
@@ -154,8 +181,10 @@ struct ArrayList {
    */
   void resize(int new_capacity) {
     assert(new_capacity > capacity_);
-
-    // To Do ...
+    char  *dataTemp = new char[new_capacity]{};
+    std::copy(data_,&data_[size_-1], dataTemp);
+      capacity_ = new_capacity;
+      data_=dataTemp;
   }
 
  public:
@@ -164,7 +193,7 @@ struct ArrayList {
 
  private:
   int size_{0};      // кол-во элементов
-  int capacity_{0};  // емоксть
+  int capacity_{0};  // емокость
   char *data_{nullptr};
 
  private:
